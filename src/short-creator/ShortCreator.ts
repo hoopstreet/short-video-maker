@@ -176,7 +176,7 @@ export class ShortCreator {
       await this.ffmpeg.saveToMp3(audioStream, tempMp3Path);
       // Use Pollinations AI for dynamic image generation with 768x1365 dimensions
       const searchPrompt = scene.searchTerms.join(" ").replace(/\s+/g, " ");
-      const pollinationsImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(searchPrompt)}?width=768&height=1365&model=turbo`;
+      const pollinationsImageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(searchPrompt)}?width=768&height=1365&model=turbo&nologo=true`;
       
       // Download Pollinations image and convert to video
       const tempImagePath = tempVideoPath.replace('.mp4', '_pollinations.png');
