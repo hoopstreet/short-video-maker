@@ -5,13 +5,22 @@ import {
 } from "../../types/shorts";
 import { logger } from "../../config";
 import { PiperTTS } from "./PiperTTS";
+import { ElevenLabsTTS } from "./ElevenLabsTTS";
 
 export class Kokoro {
   private piperTTS: PiperTTS;
+  private eleven?: ElevenLabsTTS;
 
   constructor(private language: string = "en") {
     const url = process.env.PIPER_TTS_URL || "http://piper-tts:5001";
     this.piperTTS = new PiperTTS(url);
+    if (process.env.ELEVENLABS_API_KEY) {
+      try {
+        this.eleven = new ElevenLabsTTS(process.env.ELEVENLABS_API_KEY);
+      } catch (e) {
+        // ignore init error, will fallback to Piper
+      }
+    }
   }
 
   async generate(
@@ -21,27 +30,35 @@ export class Kokoro {
     audio: ArrayBuffer;
     audioLength: number;
   }> {
-    // Always use Piper TTS for all languages
+    const elevenVoiceId = process.env.ELEVENLABS_VOICE_ID || "";
+    const useEleven = !!this.eleven && !!(process.env.ELEVENLABS_API_KEY) && !!elevenVoiceId;
+
+    if (useEleven && this.eleven) {
+      try {
+        logger.debug({ text, voice, language: this.language, elevenVoiceId }, "Using ElevenLabs TTS");
+        const enhanced = this.enhanceText(text);
+        const audio = await this.eleven.synthesize({
+          text: enhanced,
+          voiceId: elevenVoiceId,
+        });
+        // ElevenLabs returns MP3 by default; estimate duration naively assuming 24kbps average ~ 3kB/s
+        const audioLength = (audio.byteLength / 3000);
+        return { audio, audioLength };
+      } catch (e) {
+        logger.warn({ e }, "ElevenLabs failed, falling back to Piper");
+      }
+    }
+
     try {
       logger.debug({ text, voice, language: this.language }, "Using Piper TTS");
-      
-      // Map Kokoro voices to Piper voices
       const piperVoice = this.mapKokoroVoiceToPiper(voice);
-      
       const audio = await this.piperTTS.generateAudio({
         text: this.enhanceText(text),
-        voice: piperVoice
+        voice: piperVoice,
       });
-      
-      // Calculate audio length (approximate)
-      const audioLength = audio.byteLength / (22050 * 2); // 22050 Hz, 16-bit, mono
-      
+      const audioLength = audio.byteLength / (22050 * 2);
       logger.debug({ text, voice, audioLength, language: this.language }, "Audio generated with Piper TTS");
-      
-      return {
-        audio,
-        audioLength,
-      };
+      return { audio, audioLength };
     } catch (error) {
       logger.error({ error }, "Piper TTS failed");
       throw new Error(`Piper TTS error: ${error instanceof Error ? error.message : String(error)}`);
