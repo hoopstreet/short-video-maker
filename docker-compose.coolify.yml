@@ -83,19 +83,10 @@ services:
       - "coolify.name=short-creator"
       - "coolify.port=3123"
       - "traefik.enable=true"
-      - "traefik.http.routers.short-creator.rule=Host(`ykoc40scwggg4ccwowkkcc8c.otodost.app`) && PathPrefix(`/`)"
-      - "traefik.http.routers.short-creator.entrypoints=https"
-      - "traefik.http.routers.short-creator.tls=true"
+      - "traefik.http.routers.short-creator.rule=Host(`${DOMAIN:-localhost}`)"
+      - "traefik.http.routers.short-creator.entrypoints=websecure"
       - "traefik.http.routers.short-creator.tls.certresolver=letsencrypt"
       - "traefik.http.services.short-creator.loadbalancer.server.port=3123"
-      # Disable buffering at proxy for large media responses
-      - "traefik.http.middlewares.nobuffer.headers.customresponseheaders.X-Accel-Buffering=no"
-      - "traefik.http.routers.short-creator.middlewares=nobuffer"
-      # Increase forwarding timeouts for large video downloads/streams
-      - "traefik.http.services.short-creator.loadbalancer.serversTransport=short-creator-transport"
-      - "traefik.http.serversTransports.short-creator-transport.forwardingTimeouts.readTimeout=300s"
-      - "traefik.http.serversTransports.short-creator-transport.forwardingTimeouts.writeTimeout=300s"
-      - "traefik.http.serversTransports.short-creator-transport.forwardingTimeouts.idleConnTimeout=120s"
 
 networks:
   short-video-network:
