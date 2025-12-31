@@ -5,7 +5,12 @@ import z from "zod";
 
 import { ShortCreator } from "../../short-creator/ShortCreator";
 import { logger } from "../../logger";
-import { renderConfig, sceneInput } from "../../types/shorts";
+import {
+  renderConfig,
+  sceneInput,
+  type RenderConfig,
+  type SceneInput,
+} from "../../types/shorts";
 
 export class MCPRouter {
   router: express.Router;
@@ -19,10 +24,6 @@ export class MCPRouter {
     this.mcpServer = new McpServer({
       name: "Short Creator",
       version: "0.0.1",
-      capabilities: {
-        resources: {},
-        tools: {},
-      },
     });
 
     this.setupMCPServer();
@@ -30,18 +31,21 @@ export class MCPRouter {
   }
 
   private setupMCPServer() {
-    this.mcpServer.tool(
+    this.mcpServer.registerTool(
       "get-video-status",
-      "Get the status of a video (ready, processing, failed)",
       {
-        videoId: z.string().describe("The ID of the video"),
+        description: "Get the status of a video (ready, processing, failed)",
+        inputSchema: z.object({
+          videoId: z.string().describe("The ID of the video"),
+        }) as any,
       },
-      async ({ videoId }) => {
+      async (args: any) => {
+        const { videoId } = args;
         const status = this.shortCreator.status(videoId);
         return {
           content: [
             {
-              type: "text",
+              type: "text" as const,
               text: status,
             },
           ],
@@ -49,20 +53,23 @@ export class MCPRouter {
       },
     );
 
-    this.mcpServer.tool(
+    this.mcpServer.registerTool(
       "create-short-video",
-      "Create a short video from a list of scenes",
       {
-        scenes: z.array(sceneInput).describe("Each scene to be created"),
-        config: renderConfig.describe("Configuration for rendering the video"),
+        description: "Create a short video from a list of scenes",
+        inputSchema: z.object({
+          scenes: z.array(sceneInput),
+          config: renderConfig,
+        }) as any,
       },
-      async ({ scenes, config }) => {
+      async (args: any) => {
+        const { scenes, config } = args;
         const videoId = await this.shortCreator.addToQueue(scenes, config);
 
         return {
           content: [
             {
-              type: "text",
+              type: "text" as const,
               text: videoId,
             },
           ],
