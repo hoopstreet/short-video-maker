@@ -1,35 +1,42 @@
 import * as serverModule from "./server/server";
 
+// 1. Find the express app
 const app = (serverModule as any).default || (serverModule as any).app || serverModule;
 
+// 2. The Handler Function
 async function handler(event: any) {
   console.log("RunPod Job Received:", event.id);
-  return { status: "success", message: "Worker Active", input: event.input };
+  // event.input contains the data from Hugging Face
+  return { 
+    status: "success", 
+    message: "Node.js Worker Processed Job", 
+    input: event.input 
+  };
 }
 
+// 3. Start Logic
 if (process.env.RUNPOD_API_KEY) {
-    console.log("Starting RunPod Worker...");
+    console.log("Starting RunPod Node.js Worker...");
     try {
-        // Use a standard require to avoid Vite bundling issues
-        const rpSDK = require("runpod-sdk");
+        // We use the direct require for the serverless entry point
+        const runpod = require("runpod-sdk");
         
-        // Find the actual worker start function
-        const startFn = rpSDK.start || (rpSDK.default && rpSDK.default.start) || rpSDK.serverless;
-
-        if (typeof startFn === 'function') {
-            startFn({ handler });
+        // This is the specific method for the JS Worker Container
+        if (runpod.serverless) {
+            runpod.serverless(handler);
         } else {
-            // Last ditch effort: try to initialize if it's a factory function
-            const instance = typeof rpSDK === 'function' ? rpSDK(process.env.RUNPOD_API_KEY) : rpSDK;
-            if (instance && typeof instance.start === 'function') {
-                instance.start({ handler });
+            // Fallback for different SDK versions
+            const start = runpod.start || (runpod.default && runpod.default.start);
+            if (typeof start === 'function') {
+                start({ handler });
             } else {
-                console.error("SDK Export Keys:", Object.keys(rpSDK));
-                throw new Error("Could not locate start or serverless function.");
+                console.error("Manual Start Triggered...");
+                // If the SDK fails to provide a listener, we manually listen (Advanced)
+                throw new Error("Worker listener not found in SDK");
             }
         }
     } catch (err: any) {
-        console.error("Worker Critical Failure:", err.message);
+        console.error("Worker Initialization Failed:", err.message);
         process.exit(1);
     }
 } else {
