@@ -20,13 +20,23 @@
     "kokoro-js": "latest",
     "@remotion/bundler": "latest",
     "@remotion/renderer": "latest",
-    "@remotion/install-whisper-cpp": "latest"
+    "@remotion/install-whisper-cpp": "latest",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.0",
+    "axios": "^1.6.7",
+    "@mui/material": "^5.15.10",
+    "@mui/icons-material": "^5.15.10",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.0",
     "@types/fs-extra": "^11.0.4",
     "@types/fluent-ffmpeg": "^2.1.24",
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
     "typescript": "^5.3.3",
     "vite": "^5.0.12"
   }
