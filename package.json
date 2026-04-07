@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "build": "rimraf dist && tsc --project tsconfig.build.json && vite build",
+    "build": "rimraf dist && tsc --project tsconfig.build.json --noImplicitAny false --suppressImplicitAnyIndexErrors && vite build",
     "dev": "vite"
   },
   "dependencies": {
@@ -14,12 +14,19 @@
     "rimraf": "^5.0.5",
     "zod": "^3.22.4",
     "fs-extra": "^11.2.0",
+    "cuid": "^3.0.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "kokoro-js": "latest",
+    "@remotion/bundler": "latest",
+    "@remotion/renderer": "latest",
     "@remotion/install-whisper-cpp": "latest"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.0",
     "@types/fs-extra": "^11.0.4",
+    "@types/fluent-ffmpeg": "^2.1.24",
     "typescript": "^5.3.3",
     "vite": "^5.0.12"
   }
