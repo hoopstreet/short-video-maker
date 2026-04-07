@@ -70,7 +70,7 @@ RUN corepack enable
 
 FROM base AS prod-deps
 COPY package.json pnpm-lock.yaml* /app/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod 
 RUN pnpm install --prefer-offline --no-cache --prod
 
 FROM prod-deps AS build
@@ -78,7 +78,7 @@ COPY tsconfig.json /app
 COPY tsconfig.build.json /app
 COPY vite.config.ts /app
 COPY src /app/src
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install 
 RUN pnpm build
 
 FROM base
