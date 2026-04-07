@@ -11,11 +11,15 @@
   "dependencies": {
     "runpod": "latest",
     "express": "^4.18.2",
-    "rimraf": "^5.0.5"
+    "rimraf": "^5.0.5",
+    "zod": "^3.22.4",
+    "fs-extra": "^11.2.0",
+    "@remotion/install-whisper-cpp": "latest"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.0",
+    "@types/fs-extra": "^11.0.4",
     "typescript": "^5.3.3",
     "vite": "^5.0.12"
   }
