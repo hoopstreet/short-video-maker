@@ -9,7 +9,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          lfs: true # Important: Tells GitHub to pull the LFS files
+
+      - name: Install Git LFS
+        run: git lfs install
+
       - name: Push to HF
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push --force https://hoopstreet:$HF_TOKEN@huggingface.co/spaces/hoopstreet/short-video-maker main
+        run: |
+          git push --force https://hoopstreet:$HF_TOKEN@huggingface.co/spaces/hoopstreet/short-video-maker main
