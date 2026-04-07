@@ -504,3 +504,4 @@ This project is licensed under the [MIT License](LICENSE).
 - ❤️ [Pexels](https://www.pexels.com/) for video content
 - ❤️ [FFmpeg](https://ffmpeg.org/) for audio/video processing
 - ❤️ [Kokoro](https://github.com/hexgrad/kokoro) for TTS
+.
