@@ -5,23 +5,26 @@ const app = (serverModule as any).default || (serverModule as any).app || server
 
 async function handler(event: any) {
   console.log("RunPod Job Received:", event.id);
-  // This is where your video logic will eventually sit
-  return { status: "success", message: "Worker reached" };
+  return { status: "success", message: "Worker is active" };
 }
 
 if (process.env.RUNPOD_API_KEY) {
     console.log("Starting in RunPod Serverless mode...");
     
     try {
-        // 2. Use dynamic require to bypass bundling issues
+        // 2. Direct access to the serverless function
         const runpod = require("runpod-sdk");
-        const init = runpod.default || runpod;
-        const rp = typeof init === 'function' ? init(process.env.RUNPOD_API_KEY) : init;
+        
+        // Some versions of the SDK export a function, others an object
+        const rp = (typeof runpod === 'function') ? runpod(process.env.RUNPOD_API_KEY) : runpod;
+        
+        // Look for serverless in multiple locations
+        const startServerless = rp.serverless || (runpod as any).serverless;
 
-        if (rp && typeof rp.serverless === 'function') {
-            rp.serverless(handler);
+        if (typeof startServerless === 'function') {
+            startServerless(handler);
         } else {
-            throw new Error("rp.serverless is not a function");
+            throw new Error("Could not find the serverless function in the SDK.");
         }
     } catch (err: any) {
         console.error("RunPod Initialization Failed:", err.message);
