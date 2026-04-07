@@ -1,3 +1,12 @@
+---
+title: Short Video Maker
+emoji: 🎬
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 3123
+pinned: false
+---
 ## [📚 Join our Skool community for support, premium content and more!](https://www.skool.com/ai-agents-az/about?s1m)
 
 ### Be part of a growing community and help us create more content like this
