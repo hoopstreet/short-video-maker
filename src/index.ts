@@ -1,39 +1,35 @@
-import * as runpod from "runpod-sdk";
 import * as serverModule from "./server/server";
 
 const app = (serverModule as any).default || (serverModule as any).app || serverModule;
 
 async function handler(event: any) {
   console.log("RunPod Job Received:", event.id);
-  // The input data from Hugging Face will be in event.input
-  return { 
-    status: "success", 
-    message: "Video worker is active",
-    receivedInput: event.input 
-  };
+  return { status: "success", message: "Worker Active", input: event.input };
 }
 
 if (process.env.RUNPOD_API_KEY) {
     console.log("Starting RunPod Worker...");
     try {
-        // In the JS SDK, for a worker, we often use the 'run' or 'start' 
-        // depending on the internal version. 
-        const rp: any = (runpod as any).default || runpod;
+        // Use a standard require to avoid Vite bundling issues
+        const rpSDK = require("runpod-sdk");
+        
+        // Find the actual worker start function
+        const startFn = rpSDK.start || (rpSDK.default && rpSDK.default.start) || rpSDK.serverless;
 
-        // If 'start' exists (standard for newer workers)
-        if (typeof rp.start === 'function') {
-            rp.start({ handler });
-        } 
-        // Fallback for older JS worker templates
-        else if (typeof (runpod as any).serverless === 'function') {
-            (runpod as any).serverless(handler);
-        }
-        else {
-            console.error("SDK Keys found:", Object.keys(rp));
-            throw new Error("Compatible worker start method not found.");
+        if (typeof startFn === 'function') {
+            startFn({ handler });
+        } else {
+            // Last ditch effort: try to initialize if it's a factory function
+            const instance = typeof rpSDK === 'function' ? rpSDK(process.env.RUNPOD_API_KEY) : rpSDK;
+            if (instance && typeof instance.start === 'function') {
+                instance.start({ handler });
+            } else {
+                console.error("SDK Export Keys:", Object.keys(rpSDK));
+                throw new Error("Could not locate start or serverless function.");
+            }
         }
     } catch (err: any) {
-        console.error("Worker Initialization Failed:", err.message);
+        console.error("Worker Critical Failure:", err.message);
         process.exit(1);
     }
 } else {
@@ -41,7 +37,6 @@ if (process.env.RUNPOD_API_KEY) {
     if (app && typeof app.listen === 'function') {
         app.listen(port, () => console.log(`Local server on port ${port}`));
     } else {
-        console.error("Express app not found.");
         process.exit(1);
     }
 }
