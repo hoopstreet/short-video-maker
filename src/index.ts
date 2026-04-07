@@ -1,4 +1,4 @@
-import runpod from "@runpod/sdk";
+import runpod from "runpod";
 import * as serverModule from "./server/server";
 
 const app = (serverModule as any).default || (serverModule as any).app || serverModule;
@@ -13,7 +13,8 @@ async function handler(event: any) {
 }
 
 if (process.env.RUNPOD_API_KEY) {
-    console.log("Initializing RunPod Serverless Worker via @runpod/sdk...");
+    console.log("Initializing RunPod Serverless Worker via runpod SDK...");
+    // Use the verified start method for the 'runpod' npm package
     runpod.serverless(handler);
 } else {
     const port = process.env.PORT || 3123;
