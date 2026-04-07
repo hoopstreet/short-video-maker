@@ -5,27 +5,35 @@ const app = (serverModule as any).default || (serverModule as any).app || server
 
 async function handler(event: any) {
   console.log("RunPod Job Received:", event.id);
-  // event.input contains the data sent from Hugging Face
-  return { status: "success", message: "Worker successfully processed the job" };
+  // The input data from Hugging Face will be in event.input
+  return { 
+    status: "success", 
+    message: "Video worker is active",
+    receivedInput: event.input 
+  };
 }
 
 if (process.env.RUNPOD_API_KEY) {
-    console.log("Starting in RunPod Serverless mode using .start()...");
+    console.log("Starting RunPod Worker...");
     try {
-        // Based on your logs, the SDK has a 'default' or is the object itself
+        // In the JS SDK, for a worker, we often use the 'run' or 'start' 
+        // depending on the internal version. 
         const rp: any = (runpod as any).default || runpod;
-        
-        // In the official Node.js SDK, 'start' is the method for workers
+
+        // If 'start' exists (standard for newer workers)
         if (typeof rp.start === 'function') {
-            rp.start({
-                handler: handler
-            });
-        } else {
-            console.error("Available methods:", Object.keys(rp));
-            throw new Error("Could not find .start() or .serverless() in SDK");
+            rp.start({ handler });
+        } 
+        // Fallback for older JS worker templates
+        else if (typeof (runpod as any).serverless === 'function') {
+            (runpod as any).serverless(handler);
+        }
+        else {
+            console.error("SDK Keys found:", Object.keys(rp));
+            throw new Error("Compatible worker start method not found.");
         }
     } catch (err: any) {
-        console.error("RunPod Critical Failure:", err.message);
+        console.error("Worker Initialization Failed:", err.message);
         process.exit(1);
     }
 } else {
