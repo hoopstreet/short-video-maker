@@ -1,26 +1,21 @@
-import runpod from "runpod";
-import * as serverModule from "./server/server";
+import runpod from 'runpod';
+import { ShortCreator } from './short-creator/ShortCreator';
 
-const app = (serverModule as any).default || (serverModule as any).app || serverModule;
+// 1. Define the handler for RunPod
+const handler = async (event: any) => {
+  console.log("Received Job:", event.id);
+  const creator = new ShortCreator();
+  
+  try {
+    const result = await creator.generate(event.input);
+    return { success: true, url: result.url };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+};
 
-async function handler(event: any) {
-  console.log("RunPod Job Received:", event.id);
-  return { 
-    status: "success", 
-    message: "Node.js Worker is active",
-    input: event.input 
-  };
-}
+// 2. Start the RunPod Worker
+// This "listener" is what the SDK is currently missing
+runpod.serverless.start(handler);
 
-if (process.env.RUNPOD_API_KEY) {
-    console.log("Initializing RunPod Serverless Worker via runpod SDK...");
-    // Use the verified start method for the 'runpod' npm package
-    runpod.serverless(handler);
-} else {
-    const port = process.env.PORT || 3123;
-    if (app && typeof app.listen === 'function') {
-        app.listen(port, () => console.log(`Local server running on port ${port}`));
-    } else {
-        process.exit(1);
-    }
-}
+console.log("RunPod Node.js Worker initialized and polling...");
