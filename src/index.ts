@@ -10,10 +10,8 @@ import { Config } from './config';
 
 const handler = async (event: any) => {
   const config = new Config();
-  
   const kokoro = await Kokoro.init("fp32");
   const remotion = new Remotion(config);
-  // Correctly quoted model string and config
   const whisper = new Whisper("openai/whisper-large-v3", config);
   const ffmpeg = new FFMpeg();
   const pexels = new PexelsAPI(config);
