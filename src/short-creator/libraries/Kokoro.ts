@@ -54,7 +54,7 @@ export class Kokoro {
     header.writeUInt32LE(36 + totalDataLength, 4);
     header.writeUInt32LE(totalDataLength, 40);
 
-    return Buffer.concat([header, ...dataParts]) as unknown as ArrayBuffer;
+    return Buffer.concat([header, ...dataParts]).buffer as ArrayBuffer;
   }
 
   static async init(dtype: kokoroModelPrecision): Promise<Kokoro> {
