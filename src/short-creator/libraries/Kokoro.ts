@@ -31,8 +31,8 @@ export class Kokoro {
     const audioBuffers: ArrayBuffer[] = [];
     let audioLength = 0;
     for (const audio of output) {
-      audioBuffers.push(audio(.audio as any).toWav());
-      audioLength += audio(.audio as any)(.audio as any).length / audio(.audio as any).sampling_rate;
+      audioBuffers.push(audio((.audio as any) as any).toWav());
+      audioLength += audio((.audio as any) as any)((.audio as any) as any).length / audio((.audio as any) as any).sampling_rate;
     }
 
     const mergedAudioBuffer = Kokoro.concatWavBuffers(audioBuffers);
