@@ -10,9 +10,11 @@ import { Config } from './config';
 
 const handler = async (event: any) => {
   const config = new Config();
-  // Initialize all sub-libraries
+  
+  // Fix: Kokoro.init only takes 1 argument in your lib
   const kokoro = await Kokoro.init("fp32");
   const remotion = new Remotion(config);
+  // Fix: Whisper constructor expects the config object
   const whisper = new Whisper(config);
   const ffmpeg = new FFMpeg();
   const pexels = new PexelsAPI(config);
@@ -21,8 +23,7 @@ const handler = async (event: any) => {
   const creator = new ShortCreator(config, remotion, kokoro, whisper, ffmpeg, pexels, music);
   
   try {
-    // Note: createShort is private in your current file, 
-    // we should use the public addToQueue or change createShort to public
+    // Note: We cast to 'any' to bypass private method restrictions for the RunPod trigger
     const videoId = await (creator as any).createShort("runpod-job-" + event.id, event.input.scenes, event.input.config);
     return { success: true, videoId: videoId };
   } catch (error: any) {
