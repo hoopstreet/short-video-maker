@@ -19,7 +19,7 @@ export class Kokoro {
     splitter.push(text);
     splitter.close();
 
-    const output = [];
+    const output: any[] = [];
     for await (const chunk of stream) {
       output.push(chunk);
     }
