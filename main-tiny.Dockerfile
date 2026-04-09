@@ -20,11 +20,11 @@ RUN corepack enable
 
 FROM base AS prod-deps
 COPY package.json pnpm-lock.yaml* /app/
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod --no-frozen-lockfile
 
 FROM base AS build
 COPY package.json pnpm-lock.yaml* /app/
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 COPY tsconfig.json tsconfig.build.json vite.config.ts /app/
 COPY src /app/src
 RUN pnpm build
