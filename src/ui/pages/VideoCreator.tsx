@@ -8,8 +8,9 @@ const VideoCreator: React.FC = () => {
   const handleCreateVideo = async () => {
     setLoading(true);
     try {
-      // Using a fallback for the API key to satisfy the build process
-      const apiKey = (import.meta as any).env?.VITE_RUNPOD_API_KEY || "";
+      // Accessing env via string index to bypass CommonJS compiler check
+      const env = (import.meta as any)["env"];
+      const apiKey = env?.VITE_RUNPOD_API_KEY || "";
       
       await axios.post(
         "https://api.runpod.ai/v2/6z2bkikvblpg02/runsync",
