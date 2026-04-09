@@ -15,7 +15,7 @@ const handler = async (event: any) => {
   const kokoro = await Kokoro.init("fp32");
   const remotion = new Remotion(config);
   // Fix: Whisper constructor expects the config object
-  const whisper = new Whisper(config);
+  const whisper = new Whisper("openai;
   const ffmpeg = new FFMpeg();
   const pexels = new PexelsAPI(config);
   const music = new MusicManager(config);

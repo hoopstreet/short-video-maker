@@ -10,6 +10,10 @@
   },
   "dependencies": {
     "runpod": "latest",
+    "pino": "latest",
+    "remotion": "latest",
+    "@remotion/google-fonts": "latest",
+    "runpod": "latest",
     "express": "^4.18.2",
     "rimraf": "^5.0.5",
     "zod": "^3.22.4",
