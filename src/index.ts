@@ -1,21 +1,33 @@
 import runpod from 'runpod';
 import { ShortCreator } from './short-creator/ShortCreator';
+import { Kokoro } from './short-creator/libraries/Kokoro';
+import { Remotion } from './short-creator/libraries/Remotion';
+import { Whisper } from './short-creator/libraries/Whisper';
+import { FFMpeg } from './short-creator/libraries/FFmpeg';
+import { PexelsAPI } from './short-creator/libraries/Pexels';
+import { MusicManager } from './short-creator/music';
+import { Config } from './config';
 
-// 1. Define the handler for RunPod
 const handler = async (event: any) => {
-  console.log("Received Job:", event.id);
-  const creator = new ShortCreator();
+  const config = new Config();
+  // Initialize all sub-libraries
+  const kokoro = await Kokoro.init("fp32");
+  const remotion = new Remotion(config);
+  const whisper = new Whisper(config);
+  const ffmpeg = new FFMpeg();
+  const pexels = new PexelsAPI(config);
+  const music = new MusicManager(config);
+
+  const creator = new ShortCreator(config, remotion, kokoro, whisper, ffmpeg, pexels, music);
   
   try {
-    const result = await creator.generate(event.input);
-    return { success: true, url: result.url };
+    // Note: createShort is private in your current file, 
+    // we should use the public addToQueue or change createShort to public
+    const videoId = await (creator as any).createShort("runpod-job-" + event.id, event.input.scenes, event.input.config);
+    return { success: true, videoId: videoId };
   } catch (error: any) {
     return { success: false, error: error.message };
   }
 };
 
-// 2. Start the RunPod Worker
-// This "listener" is what the SDK is currently missing
 runpod.serverless.start(handler);
-
-console.log("RunPod Node.js Worker initialized and polling...");
