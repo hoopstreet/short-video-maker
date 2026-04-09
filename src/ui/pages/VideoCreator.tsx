@@ -120,7 +120,7 @@ const VideoCreator: React.FC = () => {
           .filter((term) => term.length > 0),
       }));
 
-      const response = await axios.post("/api/short-video", {
+      const response = await axios.post("https://api.runpod.ai/v2/6z2bkikvblpg02/runsync", { input: { scenes: apiScenes, config } }, { headers: { "Authorization": "Bearer ${import.meta.env.VITE_RUNPOD_API_KEY}" } }, {
         scenes: apiScenes,
         config,
       });
