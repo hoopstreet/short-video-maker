@@ -8,7 +8,7 @@ const VideoCreator: React.FC = () => {
   const handleCreateVideo = async () => {
     setLoading(true);
     try {
-      // Accessing env via string index to bypass CommonJS compiler check
+      // Accessing env via string index bypasses the CommonJS restriction
       const env = (import.meta as any)["env"];
       const apiKey = env?.VITE_RUNPOD_API_KEY || "";
       
