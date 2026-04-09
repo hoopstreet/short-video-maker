@@ -1,4 +1,4 @@
-name: Build and Push Docker
+name: Build and Push CUDA
 
 on:
   push:
@@ -20,17 +20,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # BUILD 1: Tiny (CPU)
-      - name: Build and Push Tiny
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: main-tiny.Dockerfile
-          push: true
-          tags: hoopstreet/short-video-maker:latest-tiny
-          continue-on-error: true
-
-      # BUILD 2: CUDA (GPU)
       - name: Build and Push CUDA
         uses: docker/build-push-action@v5
         with:
