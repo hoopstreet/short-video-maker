@@ -11,11 +11,10 @@ import { Config } from './config';
 const handler = async (event: any) => {
   const config = new Config();
   
-  // Fix: Kokoro.init only takes 1 argument in your lib
   const kokoro = await Kokoro.init("fp32");
   const remotion = new Remotion(config);
-  // Fix: Whisper constructor expects the config object
-  const whisper = new Whisper("openai;
+  // Correctly quoted model string and config
+  const whisper = new Whisper("openai/whisper-large-v3", config);
   const ffmpeg = new FFMpeg();
   const pexels = new PexelsAPI(config);
   const music = new MusicManager(config);
@@ -23,8 +22,11 @@ const handler = async (event: any) => {
   const creator = new ShortCreator(config, remotion, kokoro, whisper, ffmpeg, pexels, music);
   
   try {
-    // Note: We cast to 'any' to bypass private method restrictions for the RunPod trigger
-    const videoId = await (creator as any).createShort("runpod-job-" + event.id, event.input.scenes, event.input.config);
+    const videoId = await (creator as any).createShort(
+      "runpod-job-" + event.id, 
+      event.input.scenes, 
+      event.input.config
+    );
     return { success: true, videoId: videoId };
   } catch (error: any) {
     return { success: false, error: error.message };
