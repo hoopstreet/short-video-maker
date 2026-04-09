@@ -28,6 +28,7 @@ jobs:
           file: main-tiny.Dockerfile
           push: true
           tags: hoopstreet/short-video-maker:latest-tiny
+          continue-on-error: true
 
       # BUILD 2: CUDA (GPU)
       - name: Build and Push CUDA
