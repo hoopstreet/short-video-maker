@@ -1,0 +1,45 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "00:00"
+    open-pull-requests-limit: 20
+    labels: ["dependencies", "security"]
+    commit-message:
+      prefix: "chore(deps)"
+    security-updates:
+      automerge: true
+    groups:
+      python-packages:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+  
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "00:00"
+    open-pull-requests-limit: 20
+    labels: ["dependencies", "security"]
+    commit-message:
+      prefix: "chore(deps)"
+    security-updates:
+      automerge: true
+    groups:
+      npm-packages:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+  
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels: ["dependencies", "ci"]
+  
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels: ["dependencies", "security"]
